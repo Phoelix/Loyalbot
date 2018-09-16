@@ -1,24 +1,25 @@
 token = '453318336:AAGjyobZopPBKqlKzokca2KuXfdNjQoLbnQ'
-admins = 'PhoelixFelicitas'
-startbonuses = 3
+admins = 'PhoelixFelicitas tarantrader'
+startbonuses = '3'
+bonuses_to_cup = '6'
 
 
 
-welcome = 'Здравствуйте'
-mybal = 'Balance'
-addpin = 'add cup'
-balinfo = 'Balinfo'
-refbut = 'Referal'
-getref = 'Get referal link  https://t.me/myblahtest_bot?start={}'
+welcome = 'Здравствуйте {} ваша карта:{}! \n Поздравляем, в вашем кошельке теперь 3 кролика'
+mybal = 'Мой счет'
+pointsused = 'Использовано {} кроликов, Баланс: {}'
+notenothpoints = 'Упс! Маловато кроликов. Текущий балланс: {} кролик/-ов'
+balinfo = '{} номер вашего кошелька - {}, \nБАЛАНС: {} кроликов'
+refbut = 'Реферальная ссылка'
+getref = 'Ваша реферальная ссылка --   https://t.me/myblahtest_bot?start={} \n Напоминаем, что за каждого приглашенного друга, который сделал хоть 1 покупку в ваш кошелек заскочит 1 кролик'
 
 
 
 """
 
-welcome -  Приветствие
+welcome -  Приветствие 2 пары скобок первая Имя пользов. вторая номер кошеля
 mybal   -  Текст кнопки баланса 
-addpin  - 
-balinfo -  Баланс 
+balinfo -  Баланс имеет 3 поля Имя, код, и сам баланс
 refbut  -  Кнопка получения реферальной ссылки 
 getref  -  Текст реферальной ссылки, должен иметь  https://t.me/название_бота?start={}
 
