@@ -1,0 +1,5 @@
+token = '453318336:AAGjyobZopPBKqlKzokca2KuXfdNjQoLbnQ'
+admins = 'PhoelixFelicitas'
+welcome = 'Здравствуйте'
+mybal = 'Balance'
+addpin = 'add cup'
