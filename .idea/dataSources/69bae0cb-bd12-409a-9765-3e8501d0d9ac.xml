@@ -11,112 +11,253 @@
     <collation id="3" parent="1" name="BINARY"/>
     <collation id="4" parent="1" name="NOCASE"/>
     <collation id="5" parent="1" name="RTRIM"/>
-    <table id="6" parent="2" name="memb"/>
-    <table id="7" parent="2" name="referals"/>
-    <table id="8" parent="2" name="sqlite_master">
+    <table id="6" parent="2" name="facts"/>
+    <table id="7" parent="2" name="memb"/>
+    <table id="8" parent="2" name="memb2"/>
+    <table id="9" parent="2" name="referals"/>
+    <table id="10" parent="2" name="sales"/>
+    <table id="11" parent="2" name="sqlite_master">
       <System>1</System>
     </table>
-    <column id="9" parent="6" name="nid">
+    <table id="12" parent="2" name="sqlite_sequence">
+      <System>1</System>
+    </table>
+    <table id="13" parent="2" name="temp"/>
+    <trigger id="14" parent="6" name="facts_counter_to_zero">
+      <SourceTextLength>91</SourceTextLength>
+      <Turn>after-row</Turn>
+      <Events>I</Events>
+    </trigger>
+    <column id="15" parent="6" name="id">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <column id="16" parent="6" name="text">
+      <Position>2</Position>
+      <DataType>text|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="17" parent="6" name="cou">
+      <Position>3</Position>
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <index id="18" parent="6" name="facts_id_uindex">
+      <ColNames>id</ColNames>
+      <ColumnCollations></ColumnCollations>
+      <Unique>1</Unique>
+    </index>
+    <key id="19" parent="6">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>facts_id_uindex</UnderlyingIndexName>
+    </key>
+    <column id="20" parent="7" name="nid">
       <Position>1</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="10" parent="6" name="tgid">
+    <column id="21" parent="7" name="tgid">
       <Position>2</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="11" parent="6" name="fname">
+    <column id="22" parent="7" name="fname">
       <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="12" parent="6" name="nname">
+    <column id="23" parent="7" name="nname">
       <Position>4</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="13" parent="6" name="bal">
+    <column id="24" parent="7" name="bal">
       <Position>5</Position>
       <DataType>int|0s</DataType>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <index id="14" parent="6" name="memb_nid_uindex">
+    <index id="25" parent="7" name="memb_nid_uindex">
       <ColNames>nid</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <index id="15" parent="6" name="sqlite_autoindex_memb_1">
+    <index id="26" parent="7" name="sqlite_autoindex_memb_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>nid</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <index id="16" parent="6" name="memb_tgid_uindex">
+    <index id="27" parent="7" name="memb_tgid_uindex">
       <ColNames>tgid</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <key id="17" parent="6">
+    <key id="28" parent="7">
       <ColNames>nid</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_memb_1</UnderlyingIndexName>
     </key>
-    <column id="18" parent="7" name="refer">
+    <column id="29" parent="8" name="nid">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <column id="30" parent="8" name="tgid">
+      <Position>2</Position>
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="31" parent="8" name="fname">
+      <Position>3</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="32" parent="8" name="nname">
+      <Position>4</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="33" parent="8" name="bal">
+      <Position>5</Position>
+      <DataType>int|0s</DataType>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <index id="34" parent="8" name="memb2_nid_uindex">
+      <ColNames>nid</ColNames>
+      <ColumnCollations></ColumnCollations>
+      <Unique>1</Unique>
+    </index>
+    <index id="35" parent="8" name="memb2_tgid_uindex">
+      <ColNames>tgid</ColNames>
+      <ColumnCollations></ColumnCollations>
+      <Unique>1</Unique>
+    </index>
+    <key id="36" parent="8">
+      <ColNames>nid</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>memb2_nid_uindex</UnderlyingIndexName>
+    </key>
+    <column id="37" parent="9" name="refer">
       <Position>1</Position>
       <DataType>INTEGER|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="19" parent="7" name="referal">
+    <column id="38" parent="9" name="referal">
       <Position>2</Position>
       <DataType>INTEGER|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="20" parent="7" name="used">
+    <column id="39" parent="9" name="used">
       <Position>3</Position>
       <DataType>INTEGER|0s</DataType>
     </column>
-    <index id="21" parent="7" name="sqlite_autoindex_referals_1">
+    <index id="40" parent="9" name="sqlite_autoindex_referals_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>refer
 referal</ColNames>
       <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
-    <key id="22" parent="7">
+    <key id="41" parent="9">
       <ColNames>refer
 referal</ColNames>
       <UnderlyingIndexName>sqlite_autoindex_referals_1</UnderlyingIndexName>
     </key>
-    <foreign-key id="23" parent="7">
+    <foreign-key id="42" parent="9">
       <ColNames>refer</ColNames>
       <RefTableName>memb</RefTableName>
       <RefColNames>tgid</RefColNames>
     </foreign-key>
-    <foreign-key id="24" parent="7">
+    <foreign-key id="43" parent="9">
       <ColNames>referal</ColNames>
       <RefTableName>memb</RefTableName>
       <RefColNames>tgid</RefColNames>
     </foreign-key>
-    <column id="25" parent="8" name="type">
+    <trigger id="44" parent="10" name="sales_counter_to_zero">
+      <SourceTextLength>91</SourceTextLength>
+      <Turn>after-row</Turn>
+      <Events>I</Events>
+    </trigger>
+    <column id="45" parent="10" name="id">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <column id="46" parent="10" name="text">
+      <Position>2</Position>
+      <DataType>text|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="47" parent="10" name="cou">
+      <Position>3</Position>
+      <DataType>int|0s</DataType>
+      <DefaultExpression>0</DefaultExpression>
+    </column>
+    <index id="48" parent="10" name="sales_id_uindex">
+      <ColNames>id</ColNames>
+      <ColumnCollations></ColumnCollations>
+      <Unique>1</Unique>
+    </index>
+    <key id="49" parent="10">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>sales_id_uindex</UnderlyingIndexName>
+    </key>
+    <column id="50" parent="11" name="type">
       <Position>1</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="26" parent="8" name="name">
+    <column id="51" parent="11" name="name">
       <Position>2</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="27" parent="8" name="tbl_name">
+    <column id="52" parent="11" name="tbl_name">
       <Position>3</Position>
       <DataType>text|0s</DataType>
     </column>
-    <column id="28" parent="8" name="rootpage">
+    <column id="53" parent="11" name="rootpage">
       <Position>4</Position>
       <DataType>integer|0s</DataType>
     </column>
-    <column id="29" parent="8" name="sql">
+    <column id="54" parent="11" name="sql">
       <Position>5</Position>
       <DataType>text|0s</DataType>
     </column>
+    <column id="55" parent="12" name="name">
+      <Position>1</Position>
+    </column>
+    <column id="56" parent="12" name="seq">
+      <Position>2</Position>
+    </column>
+    <column id="57" parent="13" name="name">
+      <Position>1</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="58" parent="13" name="val">
+      <Position>2</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <index id="59" parent="13" name="sqlite_autoindex_temp_1">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>name</ColNames>
+      <ColumnCollations></ColumnCollations>
+      <Unique>1</Unique>
+    </index>
+    <key id="60" parent="13">
+      <ColNames>name</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>sqlite_autoindex_temp_1</UnderlyingIndexName>
+    </key>
+    <key id="61" parent="13">
+      <ColNames>name</ColNames>
+      <UnderlyingIndexName>sqlite_autoindex_temp_1</UnderlyingIndexName>
+    </key>
   </database-model>
 </dataSource>
