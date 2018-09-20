@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, RegexHandler
 from telegram import ReplyKeyboardMarkup, ReplyMarkup, ReplyKeyboardRemove
 from sqlite3 import Error, IntegrityError
@@ -8,7 +9,7 @@ import tools
 import RU
 import re
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',   #filename="WORKLOG.log",
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',   filename="WORKLOG.log",
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
