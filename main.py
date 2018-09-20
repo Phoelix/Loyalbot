@@ -213,7 +213,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('b', admcheckbal))
     updater.dispatcher.add_handler(RegexHandler('^\d{5}',  addpin))
     updater.dispatcher.add_handler(CommandHandler('help', how))
-    updater.dispatcher.add_handler(magichandler)
+    updater.dispatcher.add_handler(CommandHandler('m', tools.mmainmenu, Filters.user(username=RU.admins.split())))
     updater.dispatcher.add_handler(CallbackQueryHandler(tools.button))
     updater.dispatcher.add_handler(MessageHandler(Filters.user(username=RU.admins.split()), addtotab))
     updater.dispatcher.add_error_handler(error)
