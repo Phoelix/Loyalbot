@@ -2,6 +2,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, RegexHandler
 from telegram import ReplyKeyboardMarkup, ReplyMarkup, ReplyKeyboardRemove
 from sqlite3 import Error, IntegrityError
+from datetime import datetime
 from SQLite import SQLite
 import logging
 import random
@@ -168,7 +169,10 @@ def sales(bot, update):
 
 def fact(bot, update):
     db = SQLite()
-    text = db.magic('select min(cou),text, id from facts LIMIT 1').fetchall()
+    d = datetime.utcnow()
+    timestamp = round(datetime.timestamp(d))
+
+    text = db.magic('select text, id from facts LIMIT 1').fetchall()
     db.magic('update facts set cou = cou+1 where id = (?)', (text[0][2],))
     update.message.reply_text(text[0][1])
 
@@ -176,17 +180,19 @@ def fact(bot, update):
 def addtotab(bot, update):
     db = SQLite()
     text = update.message.text
+    adm_list = RU.admins.split()
     user=update.message.from_user
     instype = str(re.match(r'^\w+', text).group(0))
-    if len(instype) == 4:
-        db.magic('insert into facts(text) values (?)', (text[4:],))
-        update.message.reply_text(RU.addfact)
-        logger.info('User {}:{} ADD FACT!'.format(user.id,user.username))
-    elif len(instype)>=5:
-        db.magic('insert into sales(text) values (?)', (text,))
-        update.message.reply_text(RU.addsale)
-        logger.info('User {}:{} ADD S A L E!'.format(user.id,user.username))
-
+    if user.username in adm_list or user.name in adm_list:
+        if len(instype) == 4:
+            db.magic('insert into facts(text) values (?)', (text[4:],))
+            update.message.reply_text(RU.addfact)
+            logger.info('User {}:{} ADD FACT!'.format(user.id,user.username))
+        elif len(instype)>=5:
+            db.magic('insert into sales(text) values (?)', (text,))
+            update.message.reply_text(RU.addsale)
+            logger.info('User {}:{} ADD S A L E!'.format(user.id,user.username))
+    
 
 
 def error(bot, update, error):

@@ -11,7 +11,7 @@ import re
 
 def magicpanel():
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('m', mmainmenu)],
+        entry_points=[CommandHandler('m', mmainmenu, Filters.user(username=RU.admins.split()))],
 
         states={},
 

@@ -48,7 +48,6 @@
     </column>
     <index id="18" parent="6" name="facts_id_uindex">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="19" parent="6">
@@ -83,18 +82,15 @@
     </column>
     <index id="25" parent="7" name="memb_nid_uindex">
       <ColNames>nid</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <index id="26" parent="7" name="sqlite_autoindex_memb_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>nid</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <index id="27" parent="7" name="memb_tgid_uindex">
       <ColNames>tgid</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="28" parent="7">
@@ -129,12 +125,10 @@
     </column>
     <index id="34" parent="8" name="memb2_nid_uindex">
       <ColNames>nid</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <index id="35" parent="8" name="memb2_tgid_uindex">
       <ColNames>tgid</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="36" parent="8">
@@ -160,7 +154,6 @@
       <NameSurrogate>1</NameSurrogate>
       <ColNames>refer
 referal</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="41" parent="9">
@@ -202,7 +195,6 @@ referal</ColNames>
     </column>
     <index id="48" parent="10" name="sales_id_uindex">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="49" parent="10">
@@ -247,7 +239,6 @@ referal</ColNames>
     <index id="59" parent="13" name="sqlite_autoindex_temp_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>name</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="60" parent="13">
