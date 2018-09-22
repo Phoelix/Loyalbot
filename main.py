@@ -141,7 +141,7 @@ def usebal(bot, update):
                     db.magic('update memb set bal = (?) where nid = {}'.format(bonus_addr[1]), data=(temp_bal,))
                     logger.info('User {} give 1 CUP to {}'.format(user.first_name,bonus_addr[1] ))
                 update.message.reply_text(RU.pointsused.format(used, temp_bal), parse_mode=ParseMode.HTML)
-                bot.send_message(account[2], RU.clientpointsused.format(user.first_name, used, temp_bal))
+                bot.send_message(account[2], RU.clientpointsused.format(account[1], used, temp_bal), parse_mode=ParseMode.HTML)
         else: return update.message.reply_text(RU.usehelp, parse_mode=ParseMode.HTML)
 
 def admcheckbal(bot, update):
