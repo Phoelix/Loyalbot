@@ -155,8 +155,8 @@ def admcheckbal(bot, update):
         return update.message.reply_text(RU.balinfo.format(
             str(account[1]),
             str(account[2]).zfill(4),
-            str(account[0]),
-            parse_mode=ParseMode.HTML))
+            str(account[0])),
+            parse_mode=ParseMode.HTML)
     else:
         # account = db.magic('select bal, fname, nid from memb where tgid = {}'.format(str(user.id))).fetchall()
         logger.info('User {} open bal USE COMMAND /b {}'.format(user.first_name, bal))
