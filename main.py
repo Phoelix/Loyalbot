@@ -115,7 +115,7 @@ def usebal(bot, update):
     adm_list = RU.admins.split()
     if user.username in adm_list or user.name in adm_list:
         if len(bonus_addr)>1:
-            try: account = db.magic('select bal, fname from memb where nid = {}'.format(str(bonus_addr[1]))).fetchall()[0]
+            try: account = db.magic('select bal, fname, tgid from memb where nid = {}'.format(str(bonus_addr[1]))).fetchall()[0]
             except: return bot.send_photo(user.id, RU.error404)
             bal = int(account[0])
             if len(bonus_addr) == 3:
@@ -141,6 +141,7 @@ def usebal(bot, update):
                     db.magic('update memb set bal = (?) where nid = {}'.format(bonus_addr[1]), data=(temp_bal,))
                     logger.info('User {} give 1 CUP to {}'.format(user.first_name,bonus_addr[1] ))
                 update.message.reply_text(RU.pointsused.format(used, temp_bal), parse_mode=ParseMode.HTML)
+                bot.send_message(account[2], RU.clientpointsused.format(user.first_name, used, temp_bal))
         else: return update.message.reply_text(RU.usehelp, parse_mode=ParseMode.HTML)
 
 def admcheckbal(bot, update):
