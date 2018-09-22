@@ -10,7 +10,7 @@ import tools
 import RU
 import re
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',   filename="WORKLOG.log",
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',   #filename="WORKLOG.log",
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ def referal(bot, update):
     user = update.message.from_user
     refer = db.magic('select nid from memb where tgid = (?)', (user.id,)).fetchall()[0][0]
     update.message.reply_text(RU.getref.format(refer), parse_mode=ParseMode.HTML)
-    logger.info('User {} get referal'.format(user.first_name))
+    #logger.info('User {} get referal'.format(user.first_name))
 
 
 def addpin(bot, update):
@@ -56,10 +56,11 @@ def addpin(bot, update):
     user = update.message.from_user
     bonus_addr = update.message.text.split()
     adm_list = RU.admins.split()
-
+    text = RU.clientmesaddpin1
     if user.username in adm_list or user.name in adm_list:
-        account = db.magic('select bal, fname from memb where nid = {}'.format(str(bonus_addr[0]))).fetchall()
-        bal = int(account[0][0])
+        try: account = db.magic('select bal, fname, tgid from memb where nid = {}'.format(str(bonus_addr[0]))).fetchall()[0]
+        except: return bot.send_photo(user.id, RU.error404)
+        bal = int(account[0])
         if len(bonus_addr) == 1:
             try:
                 bal += 1
@@ -73,6 +74,9 @@ def addpin(bot, update):
             try:
                 bal += int(bonus_addr[1])
                 mes = bonus_addr[1]
+                if int(bonus_addr[1])==2:
+                    text = RU.clientmesaddpin2
+                else: text = RU.clientmesaddpinmany
                 db.magic('update memb set bal = (?) where nid = {}'.format(str(bonus_addr[0])),
                          data=(bal,))
                 logger.info('User {} admin and add {} POINTS to {}'.format(user.first_name, bonus_addr[1], bonus_addr[0]))
@@ -94,10 +98,10 @@ def addpin(bot, update):
                 sendMessto = db.magic('select tgid from memb where nid = {}'.format(refer[0][0])).fetchall()[0][0]
                 bot.send_message(sendMessto, RU.refrused)
         except: pass
-
+        bot.send_message(account[2], text.format(account[1], mes))
         return update.message.reply_text(RU.addpin.format(
-            str(account[0][1]),
-            str(bonus_addr[0]),
+            str(account[1]),
+            str(bonus_addr[0]).zfill(4),
             str(mes)),
             parse_mode=ParseMode.HTML)
     else:
@@ -110,31 +114,34 @@ def usebal(bot, update):
     bonus_addr = update.message.text.split()
     adm_list = RU.admins.split()
     if user.username in adm_list or user.name in adm_list:
-        account = db.magic('select bal, fname from memb where nid = {}'.format(str(bonus_addr[1]))).fetchall()
-        bal = int(account[0][0])
-        if len(bonus_addr) == 3:
-            b = RU.bonuses_to_cup
-            c = bonus_addr[2]
-            used = int(b)*int(c)
-            temp_bal = bal - used
-            if temp_bal<0:
-                logger.info('User {} has not enouth money'.format(user.first_name))
-                return update.message.reply_text(RU.notenothpoints.format(bal), parse_mode=ParseMode.HTML)
-            else:
-                db.magic('update memb set bal = (?) where nid = {}'.format(str(bonus_addr[1])), data=(temp_bal,))
-                logger.info('User {} used {} POINTS from {} account '.format(user.first_name, used, bonus_addr[1]))
-            update.message.reply_text(RU.pointsused.format(used, temp_bal))
-        elif len(bonus_addr) == 2:
-            used = int(RU.bonuses_to_cup)
-            temp_bal = bal - int(RU.bonuses_to_cup)
-            if temp_bal<0:
-                logger.info('User {} has not enouth money'.format(user.first_name))
-                return update.message.reply_text(RU.notenothpoints.format(bal))
-            else:
-                db.magic('update memb set bal = (?) where nid = {}'.format(bonus_addr[1]), data=(temp_bal,))
-                logger.info('User {} give 1 CUP to {}'.format(user.first_name,bonus_addr[1] ))
-            update.message.reply_text(RU.pointsused.format(used, temp_bal))
-        else:update.message.reply_text(RU.usehelp)
+        if len(bonus_addr)>1:
+            try: account = db.magic('select bal, fname from memb where nid = {}'.format(str(bonus_addr[1]))).fetchall()[0]
+            except: return bot.send_message(user.id, RU.error404)
+            bal = int(account[0])
+            if len(bonus_addr) == 3:
+                b = RU.bonuses_to_cup
+                c = bonus_addr[2]
+                used = int(b)*int(c)
+                temp_bal = bal - used
+                if temp_bal<0:
+                    logger.info('User {} has not enouth money'.format(user.first_name))
+                    return update.message.reply_text(RU.notenothpoints.format(bal), parse_mode=ParseMode.HTML)
+                else:
+                    db.magic('update memb set bal = (?) where nid = {}'.format(str(bonus_addr[1])), data=(temp_bal,))
+                    logger.info('User {} used {} POINTS from {} account '.format(user.first_name, used, bonus_addr[1]))
+                update.message.reply_text(RU.pointsused.format(used, temp_bal),
+                                            parse_mode=ParseMode.HTML)
+            elif len(bonus_addr) == 2:
+                used = int(RU.bonuses_to_cup)
+                temp_bal = bal - int(RU.bonuses_to_cup)
+                if temp_bal<0:
+                    logger.info('User {} has not enouth money'.format(user.first_name))
+                    return update.message.reply_text(RU.notenothpoints.format(bal), parse_mode=ParseMode.HTML)
+                else:
+                    db.magic('update memb set bal = (?) where nid = {}'.format(bonus_addr[1]), data=(temp_bal,))
+                    logger.info('User {} give 1 CUP to {}'.format(user.first_name,bonus_addr[1] ))
+                update.message.reply_text(RU.pointsused.format(used, temp_bal), parse_mode=ParseMode.HTML)
+        else: return update.message.reply_text(RU.usehelp, parse_mode=ParseMode.HTML)
 
 def admcheckbal(bot, update):
     db = SQLite()
@@ -142,12 +149,13 @@ def admcheckbal(bot, update):
     bal = update.message.text.split()[1]
     adm_list = RU.admins.split()
     if user.username in adm_list or user.name in adm_list:
-        account = db.magic('select bal, fname, nid from memb where nid = {}'.format(str(bal))).fetchall()
+        try: account = db.magic('select bal, fname, nid from memb where nid = {}'.format(str(bal))).fetchall()[0]
+        except: return bot.send_photo(update.message.from_user.id, RU.error404)
         logger.info('Admin {} open bal {}'.format(user.first_name, bal))
         return update.message.reply_text(RU.balinfo.format(
-            str(account[0][1]),
-            str(account[0][2]).zfill(4),
-            str(account[0][0]),
+            str(account[1]),
+            str(account[2]).zfill(4),
+            str(account[0]),
             parse_mode=ParseMode.HTML))
     else:
         # account = db.magic('select bal, fname, nid from memb where tgid = {}'.format(str(user.id))).fetchall()
@@ -159,7 +167,7 @@ def balfunc(bot, update):
     user = update.message.from_user
     db = SQLite()
     account = db.magic('select bal, fname, nid from memb where tgid = {}'.format(str(user.id))).fetchall()
-    logger.info('User {} open bal'.format(user.first_name))
+    #logger.info('User {} open bal'.format(user.first_name))
     return update.message.reply_text(RU.balinfo.format(
         str(account[0][1]),
         str(account[0][2]).zfill(4),
@@ -182,12 +190,11 @@ def fact(bot, update):
     db = SQLite()
     d = datetime.now().day
     last = db.magic('select lastfact from memb where tgid = {}'.format(
-        update.message.from_user.id
-    )).fetchall()
+        update.message.from_user.id)).fetchall()[0][0]
     if int(last)!=int(d):
         text = db.magic('select text, id from facts order by random() LIMIT 1').fetchall()
-        db.magic('update facts set cou = cou+1 where id = (?)', (text[0][2],))
-        answer = text[0][1]
+        db.magic('update memb set lastfact = (?) where tgid = (?)', (d,update.message.from_user.id))
+        answer = text[0][0]
     else:
         answer = RU.notToday
     update.message.reply_text(answer, parse_mode=ParseMode.HTML)
@@ -210,24 +217,27 @@ def addtotab(bot, update):
             logger.info('User {}:{} ADD S A L E!'.format(user.id,user.username))
     
 
+def adminhelp(bot, update):
+    return update.message.reply_text(
+        RU.adminhelp.format(update.message.from_user.first_name),
+        parse_mode=ParseMode.HTML)
 
 def error(bot, update, error):
     logger.info('Update {} caused error {}'.format(update, error), False)
 
+
 def main():
     updater = Updater(RU.token)
-
-    magichandler = tools.magicpanel()
-
     updater.dispatcher.add_handler(CommandHandler('start', start))
+    updater.dispatcher.add_handler(CommandHandler('imfish', adminhelp, Filters.user(username=RU.admins.split())))
     updater.dispatcher.add_handler(RegexHandler('^{}$'.format(RU.mybal), balfunc))
     updater.dispatcher.add_handler(RegexHandler('^{}$'.format(RU.refbut), referal))
     updater.dispatcher.add_handler(RegexHandler('^{}$'.format(RU.howbut), how))
     updater.dispatcher.add_handler(RegexHandler('^{}$'.format(RU.factbut), fact))
     updater.dispatcher.add_handler(RegexHandler('^{}$'.format(RU.salebut), sales))
-    updater.dispatcher.add_handler(CommandHandler('use', usebal))
-    updater.dispatcher.add_handler(CommandHandler('b', admcheckbal))
-    updater.dispatcher.add_handler(RegexHandler('^\d{5}',  addpin))
+    updater.dispatcher.add_handler(CommandHandler('use', usebal, Filters.user(username=RU.admins.split())))
+    updater.dispatcher.add_handler(CommandHandler('b', admcheckbal, Filters.user(username=RU.admins.split())))
+    updater.dispatcher.add_handler(RegexHandler('^\d{1,4}',  addpin))
     updater.dispatcher.add_handler(CommandHandler('help', how))
     updater.dispatcher.add_handler(CommandHandler('m', tools.mmainmenu, Filters.user(username=RU.admins.split())))
     updater.dispatcher.add_handler(CallbackQueryHandler(tools.button))

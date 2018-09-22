@@ -35,10 +35,11 @@ def error(bot, update, error):
 
 def mmainmenu(bot, update):
     keyboard = [[InlineKeyboardButton("Удалить Акцию", callback_data='a')],
-                [InlineKeyboardButton("Удалить Факт", callback_data='f')]]
+                [InlineKeyboardButton("Удалить Факт", callback_data='f')],
+                [InlineKeyboardButton("Прысь!", callback_data='out')]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('Menu', reply_markup=reply_markup)
+    update.message.reply_text('Волшебная панель', reply_markup=reply_markup)
     logger.info('User {}:{} start Magic Panel'.format(update.message.from_user.id, update.message.from_user.username))
 
 
@@ -50,7 +51,7 @@ def button(bot, update):
         reply_markup =[]
         result = db.magic('select * from sales').fetchall()
         for item in result:
-            reply_markup.append([InlineKeyboardButton(str(item[1][:10]), callback_data='a{}'.format(item[0]))])
+            reply_markup.append([InlineKeyboardButton(' {}...'.format(item[1][:15]), callback_data='a{}'.format(item[0]))])
         reply_markup.append([InlineKeyboardButton("Назад", callback_data='back')])
         bot.edit_message_text(text="Выберите акцию для удаления",
                               reply_markup=InlineKeyboardMarkup(reply_markup),
@@ -61,7 +62,7 @@ def button(bot, update):
         reply_markup = []
         result = db.magic('select * from facts').fetchall()
         for item in result:
-            reply_markup.append([InlineKeyboardButton(str(item[1][:10]), callback_data='f{}'.format(item[0]))])
+            reply_markup.append([InlineKeyboardButton(' {}...'.format(item[1][:15]), callback_data='f{}'.format(item[0]))])
         reply_markup.append([InlineKeyboardButton("Назад", callback_data='back')])
         bot.edit_message_text(text="Выберите факт для удаления",
                               reply_markup=InlineKeyboardMarkup(reply_markup),
@@ -88,9 +89,14 @@ def button(bot, update):
         return ConversationHandler.END
     elif res == 'back':
         reply_markup = [[InlineKeyboardButton("Удалить Акцию", callback_data='a')],
-                    [InlineKeyboardButton("Удалить Факт", callback_data='f')]]
+                    [InlineKeyboardButton("Удалить Факт", callback_data='f')],
+                [InlineKeyboardButton("Прысь!", callback_data='out')]]
         bot.edit_message_text(text="Выберите факт для удаления",
                               chat_id=query.message.chat_id,
                               message_id=query.message.message_id,
                               reply_markup=InlineKeyboardMarkup(reply_markup))
         logger.info('User {}:{} go to main page'.format(query.from_user.id,query.from_user.username))
+    elif res == 'out':
+        bot.edit_message_text(text="Все, ухожу! 👐",
+                              chat_id=query.message.chat_id,
+                              message_id=query.message.message_id)
