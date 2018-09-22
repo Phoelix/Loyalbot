@@ -116,7 +116,7 @@ def usebal(bot, update):
     if user.username in adm_list or user.name in adm_list:
         if len(bonus_addr)>1:
             try: account = db.magic('select bal, fname from memb where nid = {}'.format(str(bonus_addr[1]))).fetchall()[0]
-            except: return bot.send_message(user.id, RU.error404)
+            except: return bot.send_photo(user.id, RU.error404)
             bal = int(account[0])
             if len(bonus_addr) == 3:
                 b = RU.bonuses_to_cup
