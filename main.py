@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, RegexHandler
-from telegram import ReplyKeyboardMarkup, ReplyMarkup, ReplyKeyboardRemove
+from telegram import ReplyKeyboardMarkup, ReplyMarkup, ReplyKeyboardRemove, ParseMode
 from sqlite3 import Error, IntegrityError
 from datetime import datetime
 from SQLite import SQLite
@@ -39,15 +39,15 @@ def start(bot, update):
     else:
         mnid = db.magic('select nid from memb where tgid = {}'.format(user.id)).fetchall()[0][0]
     markup = [[RU.mybal], [RU.refbut, RU.salebut], [RU.howbut, RU.factbut]]
-    update.message.reply_text(RU.welcome.format(user.first_name, mnid), reply_markup=ReplyKeyboardMarkup(markup),
-                              resize_keyboard=True)
+    update.message.reply_text(RU.welcome.format(user.first_name, str(mnid).zfill(4)), reply_markup=ReplyKeyboardMarkup(markup),
+                              resize_keyboard=True, parse_mode=ParseMode.HTML)
 
 
 def referal(bot, update):
     db = SQLite()
     user = update.message.from_user
     refer = db.magic('select nid from memb where tgid = (?)', (user.id,)).fetchall()[0][0]
-    update.message.reply_text(RU.getref.format(refer))
+    update.message.reply_text(RU.getref.format(refer), parse_mode=ParseMode.HTML)
     logger.info('User {} get referal'.format(user.first_name))
 
 
@@ -95,15 +95,16 @@ def addpin(bot, update):
                 bot.send_message(sendMessto, RU.refrused)
         except: pass
 
-        return update.message.reply_text(RU.addpin.format(str(account[0][1]), str(bonus_addr[0]), str(mes)))
-
-        #TODO text RU.addbonus
+        return update.message.reply_text(RU.addpin.format(
+            str(account[0][1]),
+            str(bonus_addr[0]),
+            str(mes)),
+            parse_mode=ParseMode.HTML)
     else:
         logger.info('User {} input {} NO_ADMIN'.format(user.first_name, update.message.text))
-        account = db.magic('select bal, fname, nid from memb where tgid = {}'.format(str(user.id))).fetchall()
-        return update.message.reply_text(RU.balinfo.format(str(account[0][1]), str(account[0][2]), str(account[0][0])))     #TODO +RU.balinfo
+        return balfunc(bot, update)
 
-def release(bot, update):
+def usebal(bot, update):
     db = SQLite()
     user = update.message.from_user
     bonus_addr = update.message.text.split()
@@ -118,11 +119,12 @@ def release(bot, update):
             temp_bal = bal - used
             if temp_bal<0:
                 logger.info('User {} has not enouth money'.format(user.first_name))
-                return update.message.reply_text(RU.notenothpoints.format(bal))
+                return update.message.reply_text(RU.notenothpoints.format(bal), parse_mode=ParseMode.HTML)
             else:
                 db.magic('update memb set bal = (?) where nid = {}'.format(str(bonus_addr[1])), data=(temp_bal,))
                 logger.info('User {} used {} POINTS from {} account '.format(user.first_name, used, bonus_addr[1]))
-        else:
+            update.message.reply_text(RU.pointsused.format(used, temp_bal))
+        elif len(bonus_addr) == 2:
             used = int(RU.bonuses_to_cup)
             temp_bal = bal - int(RU.bonuses_to_cup)
             if temp_bal<0:
@@ -131,8 +133,8 @@ def release(bot, update):
             else:
                 db.magic('update memb set bal = (?) where nid = {}'.format(bonus_addr[1]), data=(temp_bal,))
                 logger.info('User {} give 1 CUP to {}'.format(user.first_name,bonus_addr[1] ))
-        update.message.reply_text(RU.pointsused.format(used, temp_bal))
-
+            update.message.reply_text(RU.pointsused.format(used, temp_bal))
+        else:update.message.reply_text(RU.usehelp)
 
 def admcheckbal(bot, update):
     db = SQLite()
@@ -142,39 +144,53 @@ def admcheckbal(bot, update):
     if user.username in adm_list or user.name in adm_list:
         account = db.magic('select bal, fname, nid from memb where nid = {}'.format(str(bal))).fetchall()
         logger.info('Admin {} open bal {}'.format(user.first_name, bal))
-        return update.message.reply_text(RU.balinfo.format(str(account[0][1]), str(account[0][2]), str(account[0][0])))
+        return update.message.reply_text(RU.balinfo.format(
+            str(account[0][1]),
+            str(account[0][2]).zfill(4),
+            str(account[0][0]),
+            parse_mode=ParseMode.HTML))
     else:
-        account = db.magic('select bal, fname, nid from memb where tgid = {}'.format(str(user.id))).fetchall()
+        # account = db.magic('select bal, fname, nid from memb where tgid = {}'.format(str(user.id))).fetchall()
         logger.info('User {} open bal USE COMMAND /b {}'.format(user.first_name, bal))
-        return update.message.reply_text(RU.balinfo.format(str(account[0][1]), str(account[0][2]), str(account[0][0])))
+        return balfunc(bot,update)
+        # return update.message.reply_text(RU.balinfo.format(str(account[0][1]), str(account[0][2]), str(account[0][0])))
 
 def balfunc(bot, update):
     user = update.message.from_user
     db = SQLite()
     account = db.magic('select bal, fname, nid from memb where tgid = {}'.format(str(user.id))).fetchall()
     logger.info('User {} open bal'.format(user.first_name))
-    return update.message.reply_text(RU.balinfo.format(str(account[0][1]), str(account[0][2]), str(account[0][0])))
+    return update.message.reply_text(RU.balinfo.format(
+        str(account[0][1]),
+        str(account[0][2]).zfill(4),
+        str(account[0][0])),
+        parse_mode=ParseMode.HTML)
 
 
 def how(bot, update):
-    update.message.reply_text(RU.how)
+    update.message.reply_text(RU.how, parse_mode=ParseMode.HTML)
 
 
 def sales(bot, update):
     db = SQLite()
     text = db.magic('select min(cou),text, id from sales LIMIT 1').fetchall()
     db.magic('update sales set cou = cou+1 where id = (?)', (text[0][2],))
-    update.message.reply_text(text[0][1])
+    update.message.reply_text(text[0][1], parse_mode=ParseMode.HTML)
 
 
 def fact(bot, update):
     db = SQLite()
-    d = datetime.utcnow()
-    timestamp = round(datetime.timestamp(d))
-
-    text = db.magic('select text, id from facts LIMIT 1').fetchall()
-    db.magic('update facts set cou = cou+1 where id = (?)', (text[0][2],))
-    update.message.reply_text(text[0][1])
+    d = datetime.now().day
+    last = db.magic('select lastfact from memb where tgid = {}'.format(
+        update.message.from_user.id
+    )).fetchall()
+    if int(last)!=int(d):
+        text = db.magic('select text, id from facts order by random() LIMIT 1').fetchall()
+        db.magic('update facts set cou = cou+1 where id = (?)', (text[0][2],))
+        answer = text[0][1]
+    else:
+        answer = RU.notToday
+    update.message.reply_text(answer, parse_mode=ParseMode.HTML)
 
 
 def addtotab(bot, update):
@@ -209,7 +225,7 @@ def main():
     updater.dispatcher.add_handler(RegexHandler('^{}$'.format(RU.howbut), how))
     updater.dispatcher.add_handler(RegexHandler('^{}$'.format(RU.factbut), fact))
     updater.dispatcher.add_handler(RegexHandler('^{}$'.format(RU.salebut), sales))
-    updater.dispatcher.add_handler(CommandHandler('use', release))
+    updater.dispatcher.add_handler(CommandHandler('use', usebal))
     updater.dispatcher.add_handler(CommandHandler('b', admcheckbal))
     updater.dispatcher.add_handler(RegexHandler('^\d{5}',  addpin))
     updater.dispatcher.add_handler(CommandHandler('help', how))
