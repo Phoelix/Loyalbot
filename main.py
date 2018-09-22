@@ -10,7 +10,7 @@ import tools
 import RU
 import re
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',   #filename="WORKLOG.log",
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',   filename="WORKLOG.log",
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
