@@ -193,7 +193,7 @@ def fact(bot, update):
     last = db.magic('select lastfact from memb where tgid = {}'.format(
         update.message.from_user.id)).fetchall()[0][0]
     if int(last)!=0: #int(d):
-        text = db.magic('select text, id from facts LIMIT 1').fetchall() #order by random()
+        text = db.magic('select text, id from facts order by random() LIMIT 1').fetchall()
         db.magic('update memb set lastfact = (?) where tgid = (?)', (d,update.message.from_user.id))
         answer = text[0][0]
     else:
