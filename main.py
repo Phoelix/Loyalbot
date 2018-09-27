@@ -192,13 +192,13 @@ def fact(bot, update):
     d = datetime.now().day
     last = db.magic('select lastfact from memb where tgid = {}'.format(
         update.message.from_user.id)).fetchall()[0][0]
-    if int(last)!=0: #int(d):
+    if int(last)!=int(d):
         text = db.magic('select text, id from facts order by random() LIMIT 1').fetchall()
         db.magic('update memb set lastfact = (?) where tgid = (?)', (d,update.message.from_user.id))
         answer = text[0][0]
     else:
         answer = RU.notToday
-    update.message.reply_text(answer, parse_mode=ParseMode.HTML)
+    update.message.reply_text(answer, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
 
 def addtotab(bot, update):
