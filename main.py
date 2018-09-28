@@ -198,7 +198,7 @@ def fact(bot, update):
         answer = text[0][0]
     else:
         answer = RU.notToday
-    update.message.reply_text(answer, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    update.message.reply_text(answer, parse_mode=ParseMode.HTML)
 
 
 def addtotab(bot, update):
