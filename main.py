@@ -10,7 +10,7 @@ import tools
 import RU
 import re
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',   filename="WORKLOG.log",
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',#   filename="WORKLOG.log",
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
@@ -96,7 +96,7 @@ def addpin(bot, update):
                 except Error:
                     return logger.info('User "%s", error "%s"' % (user.id, Error))
                 sendMessto = db.magic('select tgid from memb where nid = {}'.format(refer[0][0])).fetchall()[0][0]
-                bot.send_message(sendMessto, RU.refrused)
+                bot.send_message(sendMessto, RU.refrused, parse_mode=ParseMode.HTML)
         except: pass
         bot.send_message(account[2], text.format(account[1], mes))
         return update.message.reply_text(RU.addpin.format(
@@ -131,6 +131,8 @@ def usebal(bot, update):
                     logger.info('User {} used {} POINTS from {} account '.format(user.first_name, used, bonus_addr[1]))
                 update.message.reply_text(RU.pointsused.format(used, temp_bal),
                                             parse_mode=ParseMode.HTML)
+                bot.send_message(account[2], RU.clientpointsused.format(account[1], used, temp_bal),
+                                 parse_mode=ParseMode.HTML)
             elif len(bonus_addr) == 2:
                 used = int(RU.bonuses_to_cup)
                 temp_bal = bal - int(RU.bonuses_to_cup)
@@ -206,14 +208,13 @@ def addtotab(bot, update):
     text = update.message.text
     adm_list = RU.admins.split()
     user=update.message.from_user
-    instype = str(re.match(r'^\w+', text).group(0))
     if user.username in adm_list or user.name in adm_list:
-        if len(instype) == 4:
-            db.magic('insert into facts(text) values (?)', (text[4:],))
+        if text[:2] == '/f':
+            db.magic('insert into facts(text) values (?)', (text[2:],))
             update.message.reply_text(RU.addfact)
             logger.info('User {}:{} ADD FACT!'.format(user.id,user.username))
-        elif len(instype)>=5:
-            db.magic('insert into sales(text) values (?)', (text,))
+        elif text[:2] == '/a':
+            db.magic('insert into sales(text) values (?)', (text[2:],))
             update.message.reply_text(RU.addsale)
             logger.info('User {}:{} ADD S A L E!'.format(user.id,user.username))
     
@@ -242,7 +243,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('help', how))
     updater.dispatcher.add_handler(CommandHandler('m', tools.mmainmenu, Filters.user(username=RU.admins.split())))
     updater.dispatcher.add_handler(CallbackQueryHandler(tools.button))
-    updater.dispatcher.add_handler(MessageHandler(Filters.user(username=RU.admins.split()), addtotab))
+    updater.dispatcher.add_handler(CommandHandler(('a','f'), addtotab))
     updater.dispatcher.add_error_handler(error)
     updater.start_polling()
     updater.idle()
