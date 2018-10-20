@@ -1,6 +1,6 @@
 #coding:UTF-8
 token = '669211973:AAGQ2RWXoyvaANn3zt5YmrHpmvBFuoicU6w'
-admins = '@PhoelixFelicitas tarantrader apyrophob Ratsmummy n_white_r NikaMezetskaya @Romio_Tarano'
+admins = '@PhoelixFelicitas tarantrader Ratsmummy n_white_r @Romio_Tarano Sokolov_k olivka0509 Anett2 Bear_Party Strekozushka'
 startbonuses = '3'
 bonuses_to_cup = '6'
 
