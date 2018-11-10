@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*-
 # CREATED BY PhoelixSky
+from setupcon import setup_console
+setup_console('utf-8', False)
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, RegexHandler
 from telegram import ReplyKeyboardMarkup, ReplyMarkup, ReplyKeyboardRemove, ParseMode
-from tools import IsUserAdmin, HasUserName
+from tools import IsUserAdmin, userInfo, logger
 from sqlite3 import Error, IntegrityError
-from MagicPanel import mmainmenu, button
+from MagicPanel import mainmenu, button
 from datetime import datetime
 from SQLite import SQLite
-
-import logging
 import random
 import RU
 import re
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',#   filename="WORKLOG.log",
-                    level=logging.INFO)
 
-logger = logging.getLogger(__name__)
 
 
 
@@ -24,7 +21,7 @@ def start(bot, update):
     db    = SQLite()
     text  = update.message.text.split()
     user  = update.message.from_user
-    logger.debug('User {} start'.format(user.first_name, HasUserName(user, forDB='1'), ))
+    logger.debug('User {} start'.format(userInfo(user)))
     exist = db.magic('select tgid from memb where tgid = (?)', (user.id,)).fetchall()
     if not exist:
         mnid = int(db.magic('select max(nid) from memb').fetchall()[0][0])
@@ -35,11 +32,11 @@ def start(bot, update):
                 sql='insert into memb (nid, tgid, fname, nname, bal) VALUES (?,?,?,?,?)',
                 data=(mnid,  user.id, user.first_name, user.username, startBonuses))
         except Error as e:
-            logger.critical('USER Registration ERROR: User: {}:{}\n{}'.format(user.id, HasUserName(user), e))
+            logger.critical('USER Registration ERROR: User: {}\n{}'.format(userInfo(user), e))
         if len(text) == 2:
             db.magic('insert into referals (refer, referal) VALUES (?,?)',
                 data=(text[1], mnid))
-            logger.info('User {} was invited by {}'.format(user.first_name, text[1]))
+            logger.info('User {} was invited by {}'.format(userInfo(user), text[1]))
     else:
         mnid = db.magic('select nid from memb where tgid = {}'.format(user.id)).fetchall()[0][0]
     markup = [[RU.mybal], [RU.refbut, RU.salebut], [RU.howbut, RU.factbut]]
@@ -52,17 +49,17 @@ def referal(bot, update):
     user = update.message.from_user
     refer = db.magic('select nid from memb where tgid = (?)', (user.id,)).fetchall()[0][0]
     update.message.reply_text(RU.getref.format(refer), parse_mode=ParseMode.HTML)
-    logger.debug('User {} get referal'.format(user.first_name))
+    logger.debug('User {} get referal'.format(userInfo(user)))
 
 
 def addpin(bot, update):
     db = SQLite()
-    admUser = update.message.from_user
-    if IsUserAdmin(admUser):
+    user = update.message.from_user
+    if IsUserAdmin(user):
         bonus_addr = update.message.text.split()
         text = RU.clientmesaddpin1
         try: account = db.magic('select bal, fname, tgid from memb where nid = {}'.format(str(bonus_addr[0]))).fetchall()[0]
-        except: return bot.send_photo(admUser.id, RU.error404)
+        except: return bot.send_photo(user.id, RU.error404)
         bal = int(account[0])
         if len(bonus_addr) == 1:
             try:
@@ -70,21 +67,21 @@ def addpin(bot, update):
                 mes=1
                 db.magic('update memb set bal = (?) where nid = {}'.format(str(bonus_addr[0])),
                          data=(bal,))
-                logger.info('User {}:{} add 1 POINT to {}'.format(admUser.first_name, HasUserName(admUser, forDB='1'), bonus_addr[0]))
+                logger.info('User {} add 1 POINT to {}'.format(userInfo(user), bonus_addr[0]))
             except Error:
-                return logger.error('User {}:{}, error {}'.format(admUser.id, HasUserName(admUser, forDB='1'), Error))
+                return logger.error('User {}, error {}'.format(userInfo(user), Error))
         elif len(bonus_addr) >= 2:
             try: bal += int(bonus_addr[1])
             except TypeError:
-                return bot.send_message(admUser.id, RU.valerror.format(bonus_addr[1]), parse_mode=ParseMode.HTML)
+                return bot.send_message(user.id, RU.valerror.format(bonus_addr[1]), parse_mode=ParseMode.HTML)
             try:
                 mes = bonus_addr[1]
                 text = random.choice(RU.clientmesaddpins)
                 db.magic('update memb set bal = (?) where nid = {}'.format(str(bonus_addr[0])),
                          data=(bal,))
-                logger.info('User {}:{} add {} POINTS to {}'.format(admUser.first_name, HasUserName(admUser, forDB='1'), bonus_addr[1], bonus_addr[0]))
+                logger.info('User {} add {} POINTS to {}'.format(userInfo(user), bonus_addr[1], bonus_addr[0]))
             except Error:
-                return logger.error('User {}:{}, error {}'.format(admUser.id, HasUserName(admUser), Error))
+                return logger.error('User {}, error {}'.format(userInfo(user), Error))
         try:
             refer = db.magic('select refer, used from referals where referal = {}'.format(bonus_addr[0])).fetchall()
             if refer[0][1] is None:
@@ -97,7 +94,7 @@ def addpin(bot, update):
                     db.magic('update referals set used=1 where refer = (?) and referal = (?)', (refer[0][0],bonus_addr[0]))
                     logger.info('Account {} REFER and get 1 POINT for {}'.format(refer[0][0], bonus_addr[0]))
                 except Error:
-                    return logger.error('User {}:{}, error {}'.format(bonus_addr[0], HasUserName(admUser), Error))
+                    return logger.error('User {}, error {}'.format(userInfo(user), Error))
                 bot.send_message(rfr_acc[0][3], RU.refrused, parse_mode=ParseMode.HTML)
         except: pass
         bot.send_message(account[2], text.format(account[1], mes))
@@ -107,25 +104,26 @@ def addpin(bot, update):
             str(mes)),
             parse_mode=ParseMode.HTML)
     else:
-        logger.info('NOT ADM {}:{} input {}'.format(admUser.first_name, HasUserName(admUser, forDB='1'), update.message.text))
+        logger.info('NOT ADM {} input {}'.format(userInfo(user), update.message.text))
         return balfunc(bot, update)
 
 def admcheckbal(bot, update):
     db = SQLite()
     user = update.message.from_user
-    bal = update.message.text.split().pop(0)
+    bal = update.message.text.split()
+    del bal[0]
     if IsUserAdmin(user):
         account = []
         for i in bal:
             try: account.append(db.magic('select nid, fname, bal  from memb where nid = {}'.format(i)).fetchall()[0])
             except: return bot.send_photo(update.message.from_user.id, RU.error404, caption=RU.error404text.format(i))
-        logger.info('Admin {}:{} open bal {}'.format(user.first_name, HasUserName(user, forDB='1'), bal))
+        logger.info('Admin {} open bal {}'.format(userInfo(user), bal))
         answer = RU.manybalinfo
         for item in account:
-            answer += '{} || {} || {}\n'.format(item[0].zfill(4), item[1].ljust(25), item[2])
+            answer += '{}||{}{}\n'.format(str(item[0]).zfill(4), item[1].ljust(25, '_'), item[2])
         return update.message.reply_text(answer, parse_mode=ParseMode.HTML)
     else:
-        logger.warning('NOT ADM {}:{} open bal USE COMMAND /b {}'.format(user.first_name, HasUserName(user, forDB='1'), bal))
+        logger.warning('NOT ADM {} open bal USE COMMAND /b {}'.format(userInfo(user), bal))
         return balfunc(bot,update)
 
 
@@ -156,22 +154,22 @@ def usebal(bot, update):
             used = int(b)*int(c)
             temp_bal = bal - used
             if temp_bal<0:
-                logger.warning('Admin {}:{} try to use bonuses but account {} has not enouth money'.format(user.first_name, HasUserName(user, forDB='1'), bonus_addr[1]))
+                logger.warning('Admin {} try to use bonuses but account {} has not enouth money'.format(userInfo(user), bonus_addr[1]))
                 return update.message.reply_text(RU.notenothpoints.format(bal), parse_mode=ParseMode.HTML)
             else:
                 db.magic('update memb set bal = (?) where nid = {}'.format(str(bonus_addr[1])), data=(temp_bal,))
-                logger.info('User {}:{} used {} POINTS from {} account '.format(user.first_name, HasUserName(user, forDB='1'), used, bonus_addr[1]))
+                logger.info('User {} used {} POINTS from {} account '.format(userInfo(user), used, bonus_addr[1]))
             update.message.reply_text(RU.pointsused.format(used, temp_bal),
                                         parse_mode=ParseMode.HTML)
             bot.send_message(account[2], RU.clientpointsused.format(account[1], used, temp_bal),
                              parse_mode=ParseMode.HTML)
         else: return update.message.reply_text(RU.usehelp, parse_mode=ParseMode.HTML)
-    else: return logging.warning('NOT ADM {}:{} input /use')
+    else: return logger.warning('NOT ADM {} input /use'.format(userInfo(user)))
 
 
 def sales(bot, update):                 # Sales output f-n
     db = SQLite()
-    text = db.magic('select text from sales LIMIT 1').fetchall()[0][1]
+    text = db.magic('select text from sales LIMIT 1').fetchall()[0][0]
     update.message.reply_text(text, parse_mode=ParseMode.HTML)
 
 
@@ -191,18 +189,20 @@ def fact(bot, update):                  # Fact output f-n
 
 def addtotab(bot, update):              # /a or /f Adding 'a'ction or 'f'act to DB
     db = SQLite()
-    text = update.message.text
+    data = update.message.text
     user=update.message.from_user
-    if IsUserAdmin(user.username):
-        if text[:2] == '/f':
+    if IsUserAdmin(user):
+        if data[:2] == '/f':
             into = 'facts'
-        elif text[:2] == '/a':
+        else:               # text[:2] == '/a':
             into = 'sales'
-        db.magic('insert into {}(text) values {}'.format(into, text[2:]))
+        text = data[2:]
+        sql = 'insert into {}(text) values ("{}")'.format(into, text)
+        db.magic(sql)
         update.message.reply_text(RU.addaction)
-        logger.info('User {}:{} ADD ACTION(Fact or Sale)!'.format(user.id, HasUserName(user)))
+        logger.info('User {} ADD ACTION({}...)!'.format(userInfo(user),text[:15]))
     else:
-        logger.warning('NOT ADM {}:{} use /f or /a'.format(user.id, HasUserName(user)))
+        logger.warning('NOT ADM {} use /f or /a'.format(userInfo(user)))
 
 
 def helpF(bot, update):                         # /help command
@@ -214,7 +214,7 @@ def helpF(bot, update):                         # /help command
 
 
 def error(bot, update, error):
-    logger.critical('Update {} caused error {}'.format(update, error), False)
+    logger.critical('Update {} caused error {}'.format(update, error))
 
 
 def main():
@@ -231,10 +231,10 @@ def main():
     updater.dispatcher.add_handler(CommandHandler ('use',       usebal,      Filters.user(username=RU.admins.split())))
     updater.dispatcher.add_handler(CommandHandler ('b',         admcheckbal, Filters.user(username=RU.admins.split())))
     updater.dispatcher.add_handler(RegexHandler   ('^\d{1,4}',  addpin))
-    updater.dispatcher.add_handler(CommandHandler ('m',         mmainmenu,   Filters.user(username=RU.admins.split())))
+    updater.dispatcher.add_handler(CommandHandler ('m',         mainmenu,    Filters.user(username=RU.admins.split())))
     updater.dispatcher.add_handler(CommandHandler (('a','f'),   addtotab))
     # Inline Buttons
-    updater.dispatcher.add_handler(CallbackQueryHandler(button))
+    updater.dispatcher.add_handler(CallbackQueryHandler(button, pass_user_data=True))
     # System
     updater.dispatcher.add_error_handler(error)
     updater.start_polling()

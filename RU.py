@@ -1,6 +1,6 @@
-#coding:UTF-8
+# -*- coding: utf-8 -*-
 token = '686554111:AAG4_gxKjFFDbmMzlHCFf0KmYpEZ1yLV7iw'
-admins = '@PhoelixFelicitas tarantrader Ratsmummy n_white_r' #@Romio_Tarano Sokolov_K olivka0509 Anett2 Bear_Party Strekozushka
+admins = 'PhoelixFelicitas tarantrader Ratsmummy n_white_r' #@Romio_Tarano Sokolov_K olivka0509 Anett2 Bear_Party Strekozushka
 startbonuses = '3'
 bonuses_to_cup = '6'
 
@@ -16,7 +16,7 @@ pointsused = 'Використано {} кроликів.\nБаланс: {} 🐇
 clientpointsused = '<b>{}, з вашого гаманця вистрибнуло {} 🐇.</b>\nБАЛАНС:  <i>{} кроликів</i>'
 notenothpoints = '<b>Упс! Недостатньо кроликів.</b>\nТекущий балланс: {} кролик/-ов'
 balinfo = '<b>{}, унікальний номер:</b> <i>{}</i>\nБАЛАНС:  <i>{} кроликів</i>'
-manybalinfo = 'Номер||            Імя          || Баланс\n'
+manybalinfo = 'Рах..||............Імя............|| Баланс\n'
 refbut = 'Поділитися з другом'
 getref = 'Привіт! 🌄 \n\nПереходь за посиланням та отримуй на рахунок одразу <b>3 бонусних кроликів</b>, які можна обміняти на каву!\n <a href="http://t.me/my_white_rabbit_bot?start={}">Тисни!</a> \n'
 refrused = '<b>Ві-та-є-мо!</b>\nВаш друг зробив покупку. До вас застрибнув <i>1</i> бонусний кролик.\nЩиро дякуємо! 🌈'
